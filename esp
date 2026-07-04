@@ -43,7 +43,7 @@ local function CreateESP(player)
                 Drawings.Box.Size = Vector2.new(width, height)
                 Drawings.Box.Position = Vector2.new(xPosition, yPosition)
                 Drawings.Box.Visible = true
-                Drawings.Box.Color = Color3.fromRGB(255, 255, 255)
+                Drawings.Box.Color = Color3.fromRGB(248, 185, 212)
                 Drawings.Box.Thickness = 2
 
                 Drawings.BoxOutline.ZIndex = 1
