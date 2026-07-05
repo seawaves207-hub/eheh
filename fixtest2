@@ -38,8 +38,8 @@ local function Remove(player)
         return
     end
 
-    for _, drawing in next, data do
-        if typeof(drawing) == "table" and drawing.Remove then
+    for key, drawing in pairs(data) do
+        if key ~= "Character" then 
             drawing:Remove()
         end
     end
