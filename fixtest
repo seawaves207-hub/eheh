@@ -1,0 +1,182 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = game.workspace.CurrentCamera
+
+local ESP = {}
+
+-- Switches
+local BoxEnabled = false
+local HealthEnabled = false
+local NameEnabled = false
+
+local function Add(player)
+    if player == Players.LocalPlayer then
+        return 
+    end
+
+    ESP[player] = {
+        Character = player.Character,
+        Box = Drawing.new("Square"),
+        BoxOutline = Drawing.new("Square"),
+        Health = Drawing.new("Line"),
+        HealthOutline = Drawing.new("Line"),
+        Name = Drawing.new("Text"),
+    }
+
+    player.CharacterAdded:Connect(function(character)
+        ESP[player].Character = character
+    end)
+
+    player.CharacterRemoving:Connect(function()
+        ESP[player].Character = nil
+    end)
+end
+
+local function Remove(player)
+    local data = ESP[player]
+    if not data then
+        return
+    end
+
+    for _, drawing in next, data do
+        if typeof(drawing) == "table" and drawing.Remove then
+            drawing:Remove()
+        end
+    end
+
+    ESP[player] = nil
+end
+
+for _, player in Players:GetPlayers() do
+    Add(player)
+end
+
+Players.PlayerAdded:Connect(Add)
+Players.PlayerRemoving:Connect(Remove)
+
+local function HideAll(data)
+    data.Box.Visible = false
+    data.BoxOutline.Visible = false
+    data.Health.Visible = false
+    data.HealthOutline.Visible = false
+    data.Name.Visible = false
+end
+
+RunService.RenderStepped:Connect(function()
+    for player, data in pairs(ESP) do
+        local character = data.Character
+
+        if not character then
+            HideAll(data)
+            continue
+        end
+
+        local root = character:FindFirstChild("HumanoidRootPart")
+
+        if not root then
+            HideAll(data)
+            continue
+        end
+
+        local humanoid = character:FindFirstChild("Humanoid")
+
+        if not humanoid or humanoid.Health <= 0 then
+            HideAll(data)
+            continue
+        end
+
+        local pos, visible = Camera:WorldToViewportPoint(root.Position)
+
+        local scale = 1 / (pos.Z * math.tan(math.rad(Camera.FieldOfView * 0.5)) * 2) * 1000
+        local width, height = math.floor(4.5 * scale), math.floor(6.5 * scale)
+        local x, y = math.floor(pos.X), math.floor(pos.Y)
+        local xPosition, yPosition = math.floor(x - width * 0.5), math.floor((y - height * 0.5) + (0.5 * scale))
+
+        if visible and pos.Z > 0 then
+            -- BOX
+            if BoxEnabled then
+                data.Box.Position = Vector2.new(xPosition, yPosition)
+                data.Box.Size = Vector2.new(width, height)
+
+                data.BoxOutline.Position = Vector2.new(xPosition, yPosition)
+                data.BoxOutline.Size = Vector2.new(width, height)
+
+                data.Box.Visible = true
+                data.Box.Color = Color3.fromRGB(248, 185, 212)
+
+                data.BoxOutline.Visible = true
+                data.BoxOutline.Color = Color3.fromRGB(248, 185, 212)
+
+                data.Box.ZIndex = 2
+                data.BoxOutline.ZIndex = 1
+
+                data.Box.Thickness = 1
+                data.BoxOutline.Thickness = 2
+            else
+                data.Box.Visible = false
+                data.BoxOutline.Visible = false
+            end
+
+            -- HEALTH
+            if HealthEnabled then
+                local healthPercent = 100 / (humanoid.MaxHealth / humanoid.Health)
+
+                data.HealthOutline.From = Vector2.new(xPosition - 3, yPosition)
+                data.HealthOutline.To = Vector2.new(xPosition - 3, yPosition + height)
+                data.Health.From = Vector2.new(xPosition - 3, (yPosition + height) - 1)
+                data.Health.To = Vector2.new(xPosition - 3, ((data.Health.From.Y - ((height / 100) * healthPercent))) + 2)
+
+                data.Health.Color = Color3.new(1, 0, 0):Lerp(Color3.new(0, 1, 0), healthPercent * 0.01)
+                data.HealthOutline.Color = Color3.new(0, 0, 0)
+
+                data.Health.Thickness = 1
+                data.HealthOutline.Thickness = 2
+
+                data.Health.ZIndex = 2
+                data.HealthOutline.ZIndex = 1
+
+                data.Health.Visible = true
+                data.HealthOutline.Visible = true
+            else
+                data.Health.Visible = false
+                data.HealthOutline.Visible = false
+            end
+
+            -- NAME
+            if NameEnabled then
+                data.Name.Position = Vector2.new(x, (yPosition - data.Name.TextBounds.Y) - 2)
+                data.Name.Size = math.max(math.min(math.abs(14 * scale), 14), 13)
+
+                data.Name.Text = player.Name
+                data.Name.Center = true
+
+                data.Name.Color = Color3.new(1, 1, 1)
+                data.Name.Outline = true
+                data.Name.OutlineColor = Color3.new(0, 0, 0)
+
+                data.Name.Visible = true
+            else
+                data.Name.Visible = false
+            end
+        else
+            HideAll(data)
+        end
+    end
+end)
+
+-- Controls exposed to the outside
+local ESPControls = {}
+
+function ESPControls.SetBoxEnabled(value)
+    BoxEnabled = value
+end
+
+function ESPControls.SetHealthEnabled(value)
+    HealthEnabled = value
+end
+
+function ESPControls.SetNameEnabled(value)
+    NameEnabled = value
+end
+
+return ESPControls
