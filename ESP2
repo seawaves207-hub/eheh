@@ -91,10 +91,10 @@ RunService.RenderStepped:Connect(function()
                 data.BoxOutline.Size = Vector2.new(width, height)
 
                 data.Box.Visible = true
-                data.Box.Color = Color3.new(1, 1, 1)
+                data.Box.Color = Color3.new(248, 185, 212)
 
                 data.BoxOutline.Visible = true
-                data.BoxOutline.Color = Color3.new(0, 0, 0)
+                data.BoxOutline.Color = Color3.new(248, 185, 212)
 
                 data.Box.ZIndex = 2
                 data.BoxOutline.ZIndex = 1
