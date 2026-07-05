@@ -81,7 +81,7 @@ RunService.RenderStepped:Connect(function()
         local x, y = math.floor(pos.X), math.floor(pos.Y)
         local xPosition, yPosition = math.floor(x - width * 0.5), math.floor((y - height * 0.5) + (0.5 * scale))
 
-        if visible then
+        if visible and pos.Z > 0 then
             -- BOX
             if BoxEnabled then
                 data.Box.Position = Vector2.new(xPosition, yPosition)
