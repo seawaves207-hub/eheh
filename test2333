@@ -8,6 +8,8 @@ local ESP = {}
 local BoxEnabled = false
 local HealthEnabled = false
 local NameEnabled = false
+local NameSize = 14 
+local HealthSize = 1
 
 local function Add(player)
     if player == Players.LocalPlayer then
