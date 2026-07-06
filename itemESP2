@@ -3,8 +3,8 @@ local Camera = game.workspace.CurrentCamera
 local itemDir = workspace.Entities
 
 -- Switches
-local BoxEnabled = true
-local NameEnabled = true
+local BoxEnabled = false
+local NameEnabled = false
 local NameSize = 14
 
 local ESP = {}
