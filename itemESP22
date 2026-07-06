@@ -1,12 +1,9 @@
 local RunService = game:GetService("RunService")
 local Camera = game.workspace.CurrentCamera
 local itemDir = workspace.Entities
-
--- Switches
 local BoxEnabled = false
 local NameEnabled = false
 local NameSize = 14
-
 local ESP = {}
 
 local function addTool(tool)
@@ -126,3 +123,28 @@ RunService.RenderStepped:Connect(function()
                 data.Name.OutlineColor = Color3.new(0, 0, 0)
 
                 data.Name.Visible = true
+            else
+                data.Name.Visible = false
+            end
+        else
+            HideAll(data)
+        end
+    end
+end)
+
+-- Controls exposed to the outside
+local ItemESPControls = {}
+
+function ItemESPControls.SetBoxEnabled(value)
+    BoxEnabled = value
+end
+
+function ItemESPControls.SetNameEnabled(value)
+    NameEnabled = value
+end
+
+function ItemESPControls.SetNameSize(value)
+    NameSize = value
+end
+
+return ItemESPControls
