@@ -145,7 +145,7 @@ RunService.RenderStepped:Connect(function()
             -- NAME
             if NameEnabled then
                 data.Name.Position = Vector2.new(x, (yPosition - data.Name.TextBounds.Y) - 2)
-                data.Name.Size = math.max(math.min(math.abs(14 * scale), 14), 13)
+                data.Name.Size = math.max(math.min(math.abs(NameSize * scale), NameSize), 13)
 
                 data.Name.Text = player.Name
                 data.Name.Center = true
@@ -166,6 +166,10 @@ end)
 
 -- Controls exposed to the outside
 local ESPControls = {}
+
+function ESPControls.SetNameSize(value)
+    NameSize = value
+end
 
 function ESPControls.SetBoxEnabled(value)
     BoxEnabled = value
