@@ -118,30 +118,30 @@ RunService.RenderStepped:Connect(function()
             end
 
             -- HEALTH
-           if HealthEnabled then
-                 local healthPercent = 100 / (humanoid.MaxHealth / humanoid.Health)
-                 local offset = 2 + HealthSize 
-                 local thickness = HealthSize
+            if HealthEnabled then
+                local healthPercent = 100 / (humanoid.MaxHealth / humanoid.Health)
+                local offset = 2 + HealthSize
+                local thickness = HealthSize
 
-                 data.HealthOutline.From = Vector2.new(xPosition - offset, yPosition)
-                 data.HealthOutline.To = Vector2.new(xPosition - offset, yPosition + height)
-                 data.Health.From = Vector2.new(xPosition - offset, (yPosition + height) - 1)
-                 data.Health.To = Vector2.new(xPosition - offset, ((data.Health.From.Y - ((height / 100) * healthPercent))) + 2)
+                data.HealthOutline.From = Vector2.new(xPosition - offset, yPosition)
+                data.HealthOutline.To = Vector2.new(xPosition - offset, yPosition + height)
+                data.Health.From = Vector2.new(xPosition - offset, (yPosition + height) - 1)
+                data.Health.To = Vector2.new(xPosition - offset, ((data.Health.From.Y - ((height / 100) * healthPercent))) + 2)
 
-                 data.Health.Color = Color3.new(1, 0, 0):Lerp(Color3.new(0, 1, 0), healthPercent * 0.01)
-                 data.HealthOutline.Color = Color3.new(0, 0, 0)
+                data.Health.Color = Color3.new(1, 0, 0):Lerp(Color3.new(0, 1, 0), healthPercent * 0.01)
+                data.HealthOutline.Color = Color3.new(0, 0, 0)
 
-                 data.Health.Thickness = thickness
-                 data.HealthOutline.Thickness = thickness + 1
+                data.Health.Thickness = thickness
+                data.HealthOutline.Thickness = thickness + 1
 
-                 data.Health.ZIndex = 2
-                 data.HealthOutline.ZIndex = 1
+                data.Health.ZIndex = 2
+                data.HealthOutline.ZIndex = 1
 
-                 data.Health.Visible = true
-                 data.HealthOutline.Visible = true
+                data.Health.Visible = true
+                data.HealthOutline.Visible = true
             else
-                 data.Health.Visible = false
-                 data.HealthOutline.Visible = false
+                data.Health.Visible = false
+                data.HealthOutline.Visible = false
             end
 
             -- NAME
@@ -173,6 +173,10 @@ function ESPControls.SetNameSize(value)
     NameSize = value
 end
 
+function ESPControls.SetHealthSize(value)
+    HealthSize = value
+end
+
 function ESPControls.SetBoxEnabled(value)
     BoxEnabled = value
 end
@@ -183,10 +187,6 @@ end
 
 function ESPControls.SetNameEnabled(value)
     NameEnabled = value
-end
-
-function ESPControls.SetHealthSize(value)
-    HealthSize = value
 end
 
 return ESPControls
