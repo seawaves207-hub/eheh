@@ -55,9 +55,11 @@ local function HideAll(data)
     data.Name.Visible = false
 end
 
-for index, tool in pairs(itemDir:GetChildren()) do
-    addTool(tool)
-end
+task.spawn(function()
+    for index, tool in pairs(itemDir:GetChildren()) do
+        addTool(tool)
+    end
+end)
 
 itemDir.ChildAdded:Connect(function(newTool)
     if newTool:WaitForChild("Handle", 5) then
