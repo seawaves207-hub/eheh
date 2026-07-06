@@ -1,6 +1,6 @@
 local RunService = game:GetService("RunService")
 local Camera = game.workspace.CurrentCamera
-local itemDir = workspace.Entities
+local itemDir = workspace:WaitForChild("Entities", 10)
 
 -- Switches
 local BoxEnabled = true
