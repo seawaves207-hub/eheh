@@ -1,0 +1,128 @@
+local RunService = game:GetService("RunService")
+local Camera = game.workspace.CurrentCamera
+local itemDir = workspace.Entities
+
+-- Switches
+local BoxEnabled = true
+local NameEnabled = true
+local NameSize = 14
+
+local ESP = {}
+
+local function addTool(tool)
+    if tool.Name ~= "ToolModel" then
+        return
+    end
+
+    local handle = tool:FindFirstChild("Handle")
+    if not handle then
+        return
+    end
+
+    local toolBG = handle:WaitForChild("ToolBG", 0.5)
+    if not toolBG then
+        return
+    end
+
+    local toolNameValue = toolBG:WaitForChild("ToolName", 0.5)
+    if not toolNameValue then
+        return
+    end
+
+    local hitbox = tool:WaitForChild("hitbox", 0.5)
+    if not hitbox then
+        return
+    end
+
+    ESP[tool] = {
+        toolName = toolNameValue.Value,
+        hitbox = hitbox,
+        Box = Drawing.new("Square"),
+        BoxOutline = Drawing.new("Square"),
+        Name = Drawing.new("Text")
+    }
+end
+
+local function removeTool(tool)
+    if ESP[tool] then
+        ESP[tool].Box:Remove()
+        ESP[tool].BoxOutline:Remove()
+        ESP[tool].Name:Remove()
+        ESP[tool] = nil
+    end
+end
+
+local function HideAll(data)
+    data.Box.Visible = false
+    data.BoxOutline.Visible = false
+    data.Name.Visible = false
+end
+
+for index, tool in pairs(itemDir:GetChildren()) do
+    addTool(tool)
+end
+
+itemDir.ChildAdded:Connect(function(newTool)
+    if newTool:WaitForChild("Handle", 5) then
+        addTool(newTool)
+    end
+end)
+
+itemDir.ChildRemoved:Connect(function(removedTool)
+    removeTool(removedTool)
+end)
+
+RunService.RenderStepped:Connect(function()
+    for index, data in pairs(ESP) do
+        local hitbox = data.hitbox
+
+        if not hitbox then
+            HideAll(data)
+            continue
+        end
+
+        local pos, visible = Camera:WorldToViewportPoint(hitbox.Position)
+
+        local scale = 1 / (pos.Z * math.tan(math.rad(Camera.FieldOfView * 0.5)) * 2) * 1000
+        local width, height = math.floor(hitbox.Size.X * scale), math.floor(hitbox.Size.Y * scale)
+        local x, y = math.floor(pos.X), math.floor(pos.Y)
+        local xPosition, yPosition = math.floor(x - width * 0.5), math.floor((y - height * 0.5) + (0.5 * scale))
+
+        if visible and pos.Z > 0 then
+            -- BOX
+            if BoxEnabled then
+                data.Box.Position = Vector2.new(xPosition, yPosition)
+                data.Box.Size = Vector2.new(width, height)
+
+                data.BoxOutline.Position = Vector2.new(xPosition, yPosition)
+                data.BoxOutline.Size = Vector2.new(width, height)
+
+                data.Box.Visible = true
+                data.Box.Color = Color3.fromRGB(248, 185, 212)
+
+                data.BoxOutline.Visible = true
+                data.BoxOutline.Color = Color3.fromRGB(248, 185, 212)
+
+                data.Box.ZIndex = 2
+                data.BoxOutline.ZIndex = 1
+
+                data.Box.Thickness = 1
+                data.BoxOutline.Thickness = 2
+            else
+                data.Box.Visible = false
+                data.BoxOutline.Visible = false
+            end
+
+            -- NAME
+            if NameEnabled then
+                data.Name.Position = Vector2.new(x, (yPosition - data.Name.TextBounds.Y) - 2)
+                data.Name.Size = math.max(math.min(math.abs(NameSize * scale), NameSize), 13)
+
+                data.Name.Text = data.toolName
+                data.Name.Center = true
+
+                data.Name.Color = Color3.new(1, 1, 1)
+                data.Name.Outline = true
+                data.Name.OutlineColor = Color3.new(0, 0, 0)
+
+                data.Name.Visible = true
