@@ -38,8 +38,8 @@ local function Remove(player)
         return
     end
 
-    for _, drawing in next, data do
-        if typeof(drawing) == "table" and drawing.Remove then
+    for key, drawing in pairs(data) do
+        if key ~= "Character" then 
             drawing:Remove()
         end
     end
@@ -54,23 +54,34 @@ end
 Players.PlayerAdded:Connect(Add)
 Players.PlayerRemoving:Connect(Remove)
 
+local function HideAll(data)
+    data.Box.Visible = false
+    data.BoxOutline.Visible = false
+    data.Health.Visible = false
+    data.HealthOutline.Visible = false
+    data.Name.Visible = false
+end
+
 RunService.RenderStepped:Connect(function()
     for player, data in pairs(ESP) do
         local character = data.Character
 
         if not character then
+            HideAll(data)
             continue
         end
 
         local root = character:FindFirstChild("HumanoidRootPart")
 
         if not root then
+            HideAll(data)
             continue
         end
 
         local humanoid = character:FindFirstChild("Humanoid")
 
-        if not humanoid then
+        if not humanoid or humanoid.Health <= 0 then
+            HideAll(data)
             continue
         end
 
@@ -107,34 +118,36 @@ RunService.RenderStepped:Connect(function()
             end
 
             -- HEALTH
-            if HealthEnabled then
-                local healthPercent = 100 / (humanoid.MaxHealth / humanoid.Health)
+           if HealthEnabled then
+                 local healthPercent = 100 / (humanoid.MaxHealth / humanoid.Health)
+                 local offset = 2 + HealthSize 
+                 local thickness = HealthSize
 
-                data.HealthOutline.From = Vector2.new(xPosition - 3, yPosition)
-                data.HealthOutline.To = Vector2.new(xPosition - 3, yPosition + height)
-                data.Health.From = Vector2.new(xPosition - 3, (yPosition + height) - 1)
-                data.Health.To = Vector2.new(xPosition - 3, ((data.Health.From.Y - ((height / 100) * healthPercent))) + 2)
+                 data.HealthOutline.From = Vector2.new(xPosition - offset, yPosition)
+                 data.HealthOutline.To = Vector2.new(xPosition - offset, yPosition + height)
+                 data.Health.From = Vector2.new(xPosition - offset, (yPosition + height) - 1)
+                 data.Health.To = Vector2.new(xPosition - offset, ((data.Health.From.Y - ((height / 100) * healthPercent))) + 2)
 
-                data.Health.Color = Color3.new(1, 0, 0):Lerp(Color3.new(0, 1, 0), healthPercent * 0.01)
-                data.HealthOutline.Color = Color3.new(0, 0, 0)
+                 data.Health.Color = Color3.new(1, 0, 0):Lerp(Color3.new(0, 1, 0), healthPercent * 0.01)
+                 data.HealthOutline.Color = Color3.new(0, 0, 0)
 
-                data.Health.Thickness = 1
-                data.HealthOutline.Thickness = 2
+                 data.Health.Thickness = thickness
+                 data.HealthOutline.Thickness = thickness + 1
 
-                data.Health.ZIndex = 2
-                data.HealthOutline.ZIndex = 1
+                 data.Health.ZIndex = 2
+                 data.HealthOutline.ZIndex = 1
 
-                data.Health.Visible = true
-                data.HealthOutline.Visible = true
+                 data.Health.Visible = true
+                 data.HealthOutline.Visible = true
             else
-                data.Health.Visible = false
-                data.HealthOutline.Visible = false
+                 data.Health.Visible = false
+                 data.HealthOutline.Visible = false
             end
 
             -- NAME
             if NameEnabled then
                 data.Name.Position = Vector2.new(x, (yPosition - data.Name.TextBounds.Y) - 2)
-                data.Name.Size = math.max(math.min(math.abs(14 * scale), 14), 13)
+                data.Name.Size = math.max(math.min(math.abs(NameSize * scale), NameSize), 13)
 
                 data.Name.Text = player.Name
                 data.Name.Center = true
@@ -148,17 +161,17 @@ RunService.RenderStepped:Connect(function()
                 data.Name.Visible = false
             end
         else
-            data.Box.Visible = false
-            data.BoxOutline.Visible = false
-            data.Health.Visible = false
-            data.HealthOutline.Visible = false
-            data.Name.Visible = false
+            HideAll(data)
         end
     end
 end)
 
 -- Controls exposed to the outside
 local ESPControls = {}
+
+function ESPControls.SetNameSize(value)
+    NameSize = value
+end
 
 function ESPControls.SetBoxEnabled(value)
     BoxEnabled = value
@@ -170,6 +183,10 @@ end
 
 function ESPControls.SetNameEnabled(value)
     NameEnabled = value
+end
+
+function ESPControls.SetHealthSize(value)
+    HealthSize = value
 end
 
 return ESPControls
