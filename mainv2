@@ -85,7 +85,7 @@ local HealthSizeSlider = MainTab:CreateSlider({
 
 local MainSection = MainTab:CreateSection("Item ESP")
 
-local ItemESPControls = loadstring(game:HttpGet("https://raw.githubusercontent.com/seawaves207-hub/eheh/refs/heads/main/itemESP23"))()
+local ItemESPControls = loadstring(game:HttpGet("https://raw.githubusercontent.com/seawaves207-hub/eheh/refs/heads/main/itemv2.1"))()
 
 MainTab:CreateToggle({
     Name = "Item Box", CurrentValue = false, Flag = "ItemBoxToggle",
@@ -97,4 +97,13 @@ MainTab:CreateToggle({
     Callback = function(Value) ItemESPControls.SetNameEnabled(Value) end,
 })
 
-local SecondTab = Window:CreateTab("test", 0) -- Title, Image
+local NoclipControls = loadstring(game:HttpGet("https://raw.githubusercontent.com/seawaves207-hub/eheh/refs/heads/main/noclipv2.5"))()
+
+MainTab:CreateToggle({
+    Name = "Noclip",
+    CurrentValue = false,
+    Flag = "NoclipToggle",
+    Callback = function(Value) NoclipControls.setNoClip(Value) end,
+})
+
+local SecondTab = Window:CreateTab("test", 0)
