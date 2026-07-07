@@ -66,6 +66,9 @@ local function removeTool(tool)
         ESP[tool].Box:Remove()
         ESP[tool].BoxOutline:Remove()
         ESP[tool].Name:Remove()
+        if ESP[tool].highlight then
+            ESP[tool].highlight:Destroy()
+        end
         ESP[tool] = nil
     end
 end
