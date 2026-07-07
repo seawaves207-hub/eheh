@@ -16,5 +16,7 @@ local function setNoClip(value)
 			end
 		end
     end
-    
+
 end
+
+return NoclipControls
