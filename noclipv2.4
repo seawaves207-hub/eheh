@@ -6,16 +6,6 @@ local noClip = false
 
 local NoclipControls = {}
 
-function NoclipControls.setNoClip(value)
-    noClip = value
-
-    if noClip then
-        RunService.Stepped:Connect(noClip)
-    else
-        RunService.Stepped:Disconnect(noClip)
-    end
-end
-
 local function noClip()
         if LocalPlayer.Character ~= nil then
         for _,v in pairs(LocalPlayer.Character:GetDescendants()) do
@@ -23,6 +13,16 @@ local function noClip()
 				v.CanCollide = not noClip
 			end
 		end
+    end
+end
+
+function NoclipControls.setNoClip(value)
+    noClip = value
+
+    if noClip then
+        RunService.Stepped:Connect(noClip)
+    else
+        RunService.Stepped:Disconnect(noClip)
     end
 end
 
