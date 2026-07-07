@@ -1,0 +1,36 @@
+local NoclipControls = {}
+
+local RunService = game:GetService('RunService')
+local Players = game:GetService('Players')
+local LocalPlayer = Players.LocalPlayer
+
+local noClip = false
+local connection = nil
+
+local function applyNoclip()
+    if noClip and LocalPlayer.Character ~= nil then
+        for _,v in pairs(LocalPlayer.Character:GetDescendants()) do
+            if v:IsA('BasePart') and v.CanCollide then
+                v.CanCollide = false
+            end
+        end
+    end
+end
+
+function NoclipControls.setNoClip(value)
+    noClip = value
+
+    if noClip then
+        if connection then connection:Disconnect() end
+        connection = RunService.Stepped:Connect(applyNoclip)
+    else
+        if connection then
+            connection:Disconnect()
+            connection = nil
+        end
+    end
+
+    return noClip
+end
+
+return NoclipControls
