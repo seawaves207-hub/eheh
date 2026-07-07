@@ -6,6 +6,12 @@ local NameEnabled = false
 local NameSize = 14
 local ESP = {}
 
+local HiddenName = {
+    ["Kitchen Knife"] = true
+    ["Machete"] = true|
+    ["Drill"] = true
+}
+
 local function addTool(tool)
     if tool.Name ~= "ToolModel" then
         return
@@ -25,6 +31,11 @@ local function addTool(tool)
     if not toolNameValue then
         return
     end
+
+     if HiddenNames[toolNameValue.Value] then
+        return 
+    end
+
 
     local hitbox = tool:WaitForChild("hitbox", 0.5)
     if not hitbox then
@@ -134,6 +145,14 @@ end
 
 function ItemESPControls.SetNameSize(value)
     NameSize = value
+end
+
+function ItemESPControls.HideBlockedItems()
+    for tool, data in pairs(ESP) do
+        if HiddenNames[data.toolName] then
+            removeTool(tool)
+        end
+    end
 end
 
 return ItemESPControls
