@@ -70,13 +70,6 @@ itemDir.ChildRemoved:Connect(function(removedTool)
 end)
 
 RunService.RenderStepped:Connect(function()
-    if not BoxEnabled and not NameEnabled then
-        for index, data in pairs(ESP) do
-            HideAll(data)
-        end
-        return
-    end
-
     for index, data in pairs(ESP) do
         local hitbox = data.hitbox
 
