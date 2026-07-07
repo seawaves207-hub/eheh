@@ -124,7 +124,7 @@ function ItemESPControls.SetBoxEnabled(value)
     BoxEnabled = value
 
     for _, toolESP in pairs(ESP) do
-        toolESP.highlight.enabled = BoxEnabled
+        toolESP.highlight.Enabled = BoxEnabled
     end
 end
 
