@@ -1,0 +1,139 @@
+local RunService = game:GetService("RunService")
+local Camera = game.workspace.CurrentCamera
+local itemDir = workspace.Entities
+local BoxEnabled = false
+local NameEnabled = false
+local NameSize = 14
+local ESP = {}
+
+local function addTool(tool)
+    if tool.Name ~= "ToolModel" then
+        return
+    end
+
+    local handle = tool:FindFirstChild("Handle")
+    if not handle then
+        return
+    end
+
+    local toolBG = handle:WaitForChild("ToolBG", 0.5)
+    if not toolBG then
+        return
+    end
+
+    local toolNameValue = toolBG:WaitForChild("ToolName", 0.5)
+    if not toolNameValue then
+        return
+    end
+
+    local hitbox = tool:WaitForChild("hitbox", 0.5)
+    if not hitbox then
+        return
+    end
+
+    local localHighlight = Instance.new("Highlight")
+    localHighlight.Parent = tool
+    localHighlight.Adornee = tool
+    localHighlight.FillTransparency = 0.5
+    localHighlight.FillColor = Color3.fromRGB(248, 185, 212)
+    localHighlight.Enabled = BoxEnabled
+
+    ESP[tool] = {
+        toolName = toolNameValue.Value,
+        highlight = localHighlight,
+        hitbox = hitbox,
+        Box = Drawing.new("Square"),
+        BoxOutline = Drawing.new("Square"),
+        Name = Drawing.new("Text")
+    }
+
+end
+
+local function removeTool(tool)
+    if ESP[tool] then
+        ESP[tool].Box:Remove()
+        ESP[tool].BoxOutline:Remove()
+        ESP[tool].Name:Remove()
+        ESP[tool] = nil
+    end
+end
+
+task.spawn(function()
+    for index, tool in pairs(itemDir:GetChildren()) do
+        addTool(tool)
+    end
+end)
+
+itemDir.ChildAdded:Connect(function(newTool)
+    if newTool:WaitForChild("Handle", 5) then
+        addTool(newTool)
+    end
+end)
+
+itemDir.ChildRemoved:Connect(function(removedTool)
+    removeTool(removedTool)
+end)
+
+local function hideName(data)
+    data.Name.Visible = false
+end
+
+RunService.RenderStepped:Connect(function()
+    for index, data in pairs(ESP) do
+        local hitbox = data.hitbox
+
+        if not hitbox then
+            hideName(data)
+            continue
+        end
+
+        local pos, visible = Camera:WorldToViewportPoint(hitbox.Position)
+
+        local scale = 1 / (pos.Z * math.tan(math.rad(Camera.FieldOfView * 0.5)) * 2) * 1000
+        local width, height = math.floor(hitbox.Size.Z * scale), math.floor(hitbox.Size.Y * scale)
+        local x, y = math.floor(pos.X), math.floor(pos.Y)
+        local xPosition, yPosition = math.floor(x - width * 0.5), math.floor((y - height * 0.5) + (0.5 * scale))
+
+        if visible and pos.Z > 0 then
+            -- NAME
+            if NameEnabled then
+                data.Name.Position = Vector2.new(x, (yPosition - data.Name.TextBounds.Y) - 2)
+                data.Name.Size = math.max(math.min(math.abs(NameSize * scale), NameSize), 13)
+
+                data.Name.Text = data.toolName
+                data.Name.Center = true
+
+                data.Name.Color = Color3.new(1, 1, 1)
+                data.Name.Outline = true
+                data.Name.OutlineColor = Color3.new(0, 0, 0)
+
+                data.Name.Visible = true
+            else
+                data.Name.Visible = false
+            end
+        else
+            hideName(data)
+        end
+    end
+end)
+
+-- Controls exposed to the outside
+local ItemESPControls = {}
+
+function ItemESPControls.SetBoxEnabled(value)
+    BoxEnabled = value
+
+    for _, toolESP in pairs(ESP) do
+        toolESP.highlight.enabled = BoxEnabled
+    end
+end
+
+function ItemESPControls.SetNameEnabled(value)
+    NameEnabled = value
+end
+
+function ItemESPControls.SetNameSize(value)
+    NameSize = value
+end
+
+return ItemESPControls
