@@ -1,0 +1,20 @@
+local NoclipControls = {}
+
+local RunService = game:GetService('RunService')
+local Players = game:GetService('Players')
+local LocalPlayer = Players.LocalPlayer
+
+local noClip = false
+
+local function setNoClip(value)
+    noClip = value
+
+    if LocalPlayer.Character ~= nil then
+        for _,v in pairs(LocalPlayer.Character:GetDescendants()) do
+			if v:IsA('BasePart') and v.CanCollide then
+				v.CanCollide = not noClip
+			end
+		end
+    end
+    
+end
