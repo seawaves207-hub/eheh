@@ -1,12 +1,12 @@
-local NoclipControls = {}
-
 local RunService = game:GetService('RunService')
 local Players = game:GetService('Players')
 local LocalPlayer = Players.LocalPlayer
 
 local noClip = false
 
-function setNoClip(value)
+local NoclipControls = {}
+
+function NoclipControls.setNoClip(value)
     noClip = value
 
     if LocalPlayer.Character ~= nil then
