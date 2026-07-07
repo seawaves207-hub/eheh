@@ -8,9 +8,9 @@ local ESP = {}
 local HideEnabled = false
 
 local HiddenName = {
-    ["Kitchen Knife"] = true
-    ["Machete"] = true|
-    ["Drill"] = true
+    ["Kitchen Knife"] = true,
+    ["Machete"] = true,
+    ["Drill"] = true,
 }
 
 local function addTool(tool)
@@ -157,6 +157,7 @@ function ItemESPControls.SetHideEnabled(value)
                 removeTool(tool)
             end
         end
+    end
 end
 
 return ItemESPControls
