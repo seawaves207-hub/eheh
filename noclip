@@ -1,43 +1,34 @@
-local NoclipConnection = nil
-local NoclipEnabled = false
+local NoclipControls = {}
 
-local function setNoclipEnabled(enabled)
-	if enabled == NoclipEnabled then
-		return
-	end
+local RunService = game:GetService('RunService')
+local Players = game:GetService('Players')
+local LocalPlayer = Players.LocalPlayer
 
-	NoclipEnabled = enabled
+local Noclip = nil
+local Clip = true
 
-	if enabled then
-		NoclipConnection = game:GetService("RunService").Stepped:Connect(function()
-			if not NoclipEnabled or game.Players.LocalPlayer.Character == nil then
-				return
+local function Nocl()
+	if Clip == false and LocalPlayer.Character ~= nil then
+		for _,v in pairs(LocalPlayer.Character:GetDescendants()) do
+			if v:IsA('BasePart') and v.CanCollide then
+				v.CanCollide = false
 			end
-
-			for _, part in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-				if part:IsA("BasePart") and part.CanCollide and part.Name ~= floatName then
-					part.CanCollide = false
-				end
-			end
-		end)
-	else
-		if NoclipConnection then
-			NoclipConnection:Disconnect()
-			NoclipConnection = nil
 		end
 	end
 end
 
-function noclip()
-	setNoclipEnabled(true)
+function NoclipControls.SetNoclipEnabled(Value)
+	if Value then
+		Clip = false
+		if Noclip then Noclip:Disconnect() end
+		Noclip = RunService.Stepped:Connect(Nocl)
+	else
+		Clip = true
+		if Noclip then
+			Noclip:Disconnect()
+			Noclip = nil
+		end
+	end
 end
 
-function clip()
-	setNoclipEnabled(false)
-end
-
-function ToggleNoclip()
-	setNoclipEnabled(not NoclipEnabled)
-end
-
-setNoclipEnabled(false)
+return NoclipControls
