@@ -6,7 +6,7 @@ local LocalPlayer = Players.LocalPlayer
 
 local noClip = false
 
-local function setNoClip(value)
+function setNoClip(value)
     noClip = value
 
     if LocalPlayer.Character ~= nil then
@@ -16,7 +16,7 @@ local function setNoClip(value)
 			end
 		end
     end
-
+    return noClip
 end
 
 return NoclipControls
