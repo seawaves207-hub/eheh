@@ -1,0 +1,43 @@
+local NoclipConnection = nil
+local NoclipEnabled = false
+
+local function setNoclipEnabled(enabled)
+	if enabled == NoclipEnabled then
+		return
+	end
+
+	NoclipEnabled = enabled
+
+	if enabled then
+		NoclipConnection = game:GetService("RunService").Stepped:Connect(function()
+			if not NoclipEnabled or game.Players.LocalPlayer.Character == nil then
+				return
+			end
+
+			for _, part in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+				if part:IsA("BasePart") and part.CanCollide and part.Name ~= floatName then
+					part.CanCollide = false
+				end
+			end
+		end)
+	else
+		if NoclipConnection then
+			NoclipConnection:Disconnect()
+			NoclipConnection = nil
+		end
+	end
+end
+
+function noclip()
+	setNoclipEnabled(true)
+end
+
+function clip()
+	setNoclipEnabled(false)
+end
+
+function ToggleNoclip()
+	setNoclipEnabled(not NoclipEnabled)
+end
+
+setNoclipEnabled(false)
