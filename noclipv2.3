@@ -9,14 +9,21 @@ local NoclipControls = {}
 function NoclipControls.setNoClip(value)
     noClip = value
 
-    if LocalPlayer.Character ~= nil then
+    if noClip then
+        RunService.Stepped:Connect(noClip)
+    else
+        RunService.Stepped:Disconnect(noClip)
+    end
+end
+
+local function noClip()
+        if LocalPlayer.Character ~= nil then
         for _,v in pairs(LocalPlayer.Character:GetDescendants()) do
 			if v:IsA('BasePart') and v.CanCollide then
 				v.CanCollide = not noClip
 			end
 		end
     end
-    return noClip
 end
 
 return NoclipControls
