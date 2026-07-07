@@ -1,8 +1,8 @@
 local RunService = game:GetService("RunService")
 local Camera = game.workspace.CurrentCamera
 local itemDir = workspace.Entities
-local BoxEnabled = false
-local NameEnabled = false
+local BoxEnabled = true
+local NameEnabled = true
 local NameSize = 14
 local ESP = {}
 
@@ -55,11 +55,9 @@ local function HideAll(data)
     data.Name.Visible = false
 end
 
-task.spawn(function()
-    for index, tool in pairs(itemDir:GetChildren()) do
-        addTool(tool)
-    end
-end)
+for index, tool in pairs(itemDir:GetChildren()) do
+    addTool(tool)
+end
 
 itemDir.ChildAdded:Connect(function(newTool)
     if newTool:WaitForChild("Handle", 5) then
@@ -72,6 +70,13 @@ itemDir.ChildRemoved:Connect(function(removedTool)
 end)
 
 RunService.RenderStepped:Connect(function()
+    if not BoxEnabled and not NameEnabled then
+        for index, data in pairs(ESP) do
+            HideAll(data)
+        end
+        return
+    end
+
     for index, data in pairs(ESP) do
         local hitbox = data.hitbox
 
@@ -133,20 +138,3 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
-
--- Controls exposed to the outside
-local ItemESPControls = {}
-
-function ItemESPControls.SetBoxEnabled(value)
-    BoxEnabled = value
-end
-
-function ItemESPControls.SetNameEnabled(value)
-    NameEnabled = value
-end
-
-function ItemESPControls.SetNameSize(value)
-    NameSize = value
-end
-
-return ItemESPControls
