@@ -3,12 +3,6 @@ local InfStamina = {}
 local userInputService = game:GetService("UserInputService")
 local player = game:GetService("Players").LocalPlayer
 
-local function setWalkSpeed(speed)
-    if key.KeyCode == Enum.KeyCode.LeftShift then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
-    end
-end
-
 local inputStartConnection
 local inputEndConnection
 
@@ -20,8 +14,16 @@ function InfStamina.setInfStamina(value)
     end
 
     if value then
-        inputStartConnection = userInputService.InputBegan:connect(setWalkSpeed(23))
-        inputEndConnection = userInputService.InputEnded:connect(setWalkSpeed(13))
+        inputStartConnection = userInputService.InputBegan:connect(function(key)
+            if key.KeyCode == Enum.KeyCode.LeftShift then
+                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 23
+            end
+        end)
+        inputEndConnection = userInputService.InputEnded:connect(function(key) 
+            if key.KeyCode == Enum.KeyCode.LeftShift then
+                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 13
+            end
+        end)
     else
         inputStartConnection:Disconnect()
         inputEndConnection:Disconnect()
