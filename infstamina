@@ -1,0 +1,31 @@
+local InfStamina = {}
+
+local userInputService = game:GetService("UserInputService")
+local player = game:GetService("Players").LocalPlayer
+
+local function setWalkSpeed(speed)
+    if key.KeyCode == Enum.KeyCode.LeftShift then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
+    end
+end
+
+local inputStartConnection
+local inputEndConnection
+
+function InfStamina.setInfStamina(value)
+    for index, v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+        if v:IsA("LocalScript") and index == 12 then
+            v.Disabled = value
+        end
+    end
+
+    if value then
+        inputStartConnection = userInputService.InputBegan:connect(setWalkSpeed(23))
+        inputEndConnection = userInputService.InputEnded:connect(setWalkSpeed(13))
+    else
+        inputStartConnection:Disconnect()
+        inputEndConnection:Disconnect()
+    end
+end
+
+return InfStamina
